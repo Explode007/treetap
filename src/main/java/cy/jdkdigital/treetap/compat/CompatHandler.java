@@ -1,14 +1,15 @@
 package cy.jdkdigital.treetap.compat;
 
+import cy.jdkdigital.treetap.TreeTap;
 import cy.jdkdigital.treetap.common.block.recipe.TapExtractRecipe;
 import cy.jdkdigital.treetap.compat.tfc.TFCCompat;
+import cy.jdkdigital.treetap.util.TreeUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.ModList;
 
 import java.util.List;
@@ -34,9 +35,15 @@ public class CompatHandler
         }
     }
 
-    public static boolean isValidTree(LevelReader level, BlockPos pos) {
+    public static boolean isValidTree(LevelReader levelReader, BlockPos pos) {
         if (ModList.get().isLoaded("tfc")) {
-            return TFCCompat.isValidTree(level, pos);
+            return TFCCompat.isValidTree(levelReader, pos);
+        }
+        if (levelReader instanceof Level level) {
+            var recipe = TreeTap.getRecipe(level, level.getBlockState(pos));
+            if (recipe != null && recipe.requiredBlocks > 1) {
+                return TreeUtil.isValidTree(level, pos, recipe.requiredBlocks);
+            }
         }
         return true;
     }
@@ -45,6 +52,6 @@ public class CompatHandler
         if (ModList.get().isLoaded("tfc")) {
             return TFCCompat.adjustTapModifier(level, pos, modifier);
         }
-        return modifier;
+        return TreeUtil.adjustTapModifier(level, pos, modifier);
     }
 }

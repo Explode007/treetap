@@ -1,6 +1,7 @@
 package cy.jdkdigital.treetap.common.block;
 
 import cy.jdkdigital.treetap.TreeTap;
+import cy.jdkdigital.treetap.common.block.entity.SapCollectorBlockEntity;
 import cy.jdkdigital.treetap.common.block.entity.TapBlockEntity;
 import cy.jdkdigital.treetap.compat.CompatHandler;
 import net.minecraft.core.BlockPos;
@@ -140,9 +141,9 @@ public class TapBlock extends BaseEntityBlock
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, level, pos, block, fromPos, isMoving);
         // If the block below was changed, reset recipe
-        if (pos.getY() - fromPos.getY() == 1 && level.getBlockEntity(pos) instanceof TapBlockEntity tapBlockEntity) {
+        if (!(level.getBlockEntity(pos.below()) instanceof SapCollectorBlockEntity) && level.getBlockEntity(pos) instanceof TapBlockEntity tapBlockEntity) {
             tapBlockEntity.reset();
-            level.sendBlockUpdated(pos, state, state.setValue(BlockStateProperties.ATTACHED, false), Block.UPDATE_CLIENTS);
+            level.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.ATTACHED, false));
         }
         if (!level.isClientSide) {
             level.scheduleTick(pos, this, 4);

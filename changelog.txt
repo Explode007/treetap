@@ -1,4 +1,10 @@
-1.20.1-0.2.2
+1.20.1-0.3.0
+
+- Added diminished production for having multiple taps on the same tree for non-TFC
+- Added required_block_count to recipes that wants a certain sized "tree" to function
+
+
+1.20.1-0.2.3
 
 - Fixed mod not working without TFC
 

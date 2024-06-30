@@ -36,8 +36,9 @@ public class TapExtractRecipe implements Recipe<Container>
     public final String fluidColor;
     public final FluidStack displayFluid;
     public final int[] lifeCycles;
+    public final int requiredBlocks;
 
-    public TapExtractRecipe(ResourceLocation id, Ingredient input, ItemStack itemOutput, ItemStack woodenItemOutput, Ingredient harvestItem, boolean collectBucket, int processingTime, FluidStack displayFluid, String fluidColor, int[] lifeCycles) {
+    public TapExtractRecipe(ResourceLocation id, Ingredient input, ItemStack itemOutput, ItemStack woodenItemOutput, Ingredient harvestItem, boolean collectBucket, int processingTime, FluidStack displayFluid, String fluidColor, int requiredBlocks, int[] lifeCycles) {
         this.id = id;
         this.input = input;
         this.itemOutput = itemOutput;
@@ -47,6 +48,7 @@ public class TapExtractRecipe implements Recipe<Container>
         this.processingTime = processingTime;
         this.fluidColor = fluidColor;
         this.displayFluid = displayFluid;
+        this.requiredBlocks = requiredBlocks;
         this.lifeCycles = lifeCycles;
     }
 
@@ -146,12 +148,12 @@ public class TapExtractRecipe implements Recipe<Container>
             }
             String fluidColor = json.has("fluid_color") ? json.get("fluid_color").getAsString() : "";
 
-            return this.factory.create(id, input, metalTtemOutput, woodenItemOutput, harvestItem, GsonHelper.getAsBoolean(json, "collect_bucket", false), GsonHelper.getAsInt(json, "processing_time", 1000), new FluidStack(displayFluid, 1000), fluidColor, lifeCycles);
+            return this.factory.create(id, input, metalTtemOutput, woodenItemOutput, harvestItem, GsonHelper.getAsBoolean(json, "collect_bucket", false), GsonHelper.getAsInt(json, "processing_time", 1000), new FluidStack(displayFluid, 1000), fluidColor, GsonHelper.getAsInt(json, "required_block_count", 1), lifeCycles);
         }
 
         public T fromNetwork(@Nonnull ResourceLocation id, @Nonnull FriendlyByteBuf buffer) {
             try {
-                return this.factory.create(id, Ingredient.fromNetwork(buffer), buffer.readItem(), buffer.readItem(), Ingredient.fromNetwork(buffer), buffer.readBoolean(), buffer.readInt(), buffer.readFluidStack(), buffer.readUtf(), buffer.readVarIntArray());
+                return this.factory.create(id, Ingredient.fromNetwork(buffer), buffer.readItem(), buffer.readItem(), Ingredient.fromNetwork(buffer), buffer.readBoolean(), buffer.readInt(), buffer.readFluidStack(), buffer.readUtf(), buffer.readInt(), buffer.readVarIntArray());
             } catch (Exception e) {
                 TreeTap.LOGGER.error("Error reading tap extract recipe from packet. " + id, e);
                 throw e;
@@ -168,6 +170,7 @@ public class TapExtractRecipe implements Recipe<Container>
                 buffer.writeInt(recipe.processingTime);
                 buffer.writeFluidStack(recipe.displayFluid);
                 buffer.writeUtf(recipe.fluidColor);
+                buffer.writeInt(recipe.requiredBlocks);
                 buffer.writeVarIntArray(recipe.lifeCycles);
             } catch (Exception e) {
                 TreeTap.LOGGER.error("Error writing tap extract recipe to packet. " + recipe.getId(), e);
@@ -177,7 +180,7 @@ public class TapExtractRecipe implements Recipe<Container>
 
         public interface IRecipeFactory<T extends TapExtractRecipe>
         {
-            T create(ResourceLocation id, Ingredient input, ItemStack metalItemOutput, ItemStack woodenItemOutput, Ingredient harvestItem, boolean fluidOutput, int processingTime, FluidStack displayFluid, String fluidColor, int[] lifeCycles);
+            T create(ResourceLocation id, Ingredient input, ItemStack metalItemOutput, ItemStack woodenItemOutput, Ingredient harvestItem, boolean fluidOutput, int processingTime, FluidStack displayFluid, String fluidColor, int requiredBlocks, int[] lifeCycles);
         }
     }
 }

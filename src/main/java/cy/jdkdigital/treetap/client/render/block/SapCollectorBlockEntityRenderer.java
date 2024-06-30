@@ -1,16 +1,15 @@
 package cy.jdkdigital.treetap.client.render.block;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import cy.jdkdigital.treetap.common.block.entity.SapCollectorBlockEntity;
 import cy.jdkdigital.treetap.util.ColorUtil;
-import net.dries007.tfc.client.RenderHelpers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -52,7 +51,7 @@ public class SapCollectorBlockEntityRenderer implements BlockEntityRenderer<SapC
 
             //fluid texture info
             TextureAtlasSprite stillFluidSprite = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(renderProperties.getStillTexture(fluidStack));
-            VertexConsumer vertexBuffer = bufferSource.getBuffer(RenderType.entityTranslucentCull(RenderHelpers.BLOCKS_ATLAS));
+            VertexConsumer vertexBuffer = bufferSource.getBuffer(RenderType.entityTranslucentCull(TextureAtlas.LOCATION_BLOCKS));
 
             //fluid render info
             Matrix4f lastPose = poseStack.last().pose();
